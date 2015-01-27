@@ -81,10 +81,6 @@ public class Scrbble extends Application {
 			DragPainter(e);
 		});
 		
-		panel.setOnMouseReleased((MouseEvent e) -> {
-			LineEnder(e);
-		});
-		
 		primaryStage.show();
 
 	}
@@ -98,10 +94,12 @@ public class Scrbble extends Application {
 	private Slider slider; 
 	private ComboBox<String> comboBox;
 	private ColorPicker colorPicker;
-
+	private int gestichel;
+	
+	
 	private void lineStarter(MouseEvent e){
 		x=e.getX();y=e.getY();
-		group.getChildren().add(new Circle(x,y,3,Color.TRANSPARENT));
+		group.getChildren().add(new Group());
 	}
 	
 	private void DragPainter(MouseEvent e){
@@ -137,12 +135,17 @@ public class Scrbble extends Application {
 			group.getChildren().add(l2);
 		}else if (s == "Line gestrichelt"){
 			/* Dashed Line */
-			Line l = new Line(x,y,lastX,lastY);
-			l.setStrokeWidth(slider.getValue());
-			l.setStroke(colorPicker.getValue());
-			l.setStrokeDashOffset(2.0);
 			
-			group.getChildren().add(l);
+			if(gestichel % 2 == 0){
+				Line l = new Line(x,y,lastX,lastY);
+				l.setStrokeWidth(slider.getValue());
+				l.setStroke(colorPicker.getValue());
+				
+				group.getChildren().add(l);
+			}
+			
+			gestichel++;
+
 		}else{
 			/* LINE */
 			Line l = new Line(x,y,lastX,lastY);
@@ -151,10 +154,6 @@ public class Scrbble extends Application {
 			group.getChildren().add(l);
 		}
 
-	}
-	
-	private void LineEnder(MouseEvent e){
-		group.getChildren().add(new Circle(lastX,lastY,3,Color.TRANSPARENT));
 	}
 	
 	private void deleteGroup(MouseEvent e){
@@ -168,23 +167,19 @@ public class Scrbble extends Application {
 	private void undoGroup(MouseEvent e){
 		
 		int lastElement = group.getChildren().size();
-		boolean firstCircle = false, delete = false;
 		
+		// lastElement ist die größe meines Obj
+		// Ich lösche alles außer das Rectangle
 		for(int i = (lastElement-1); i > 0;i--){
 			
 			Node obj = group.getChildren().get(i);
-
-			if(obj instanceof Circle && firstCircle == false){
+			//löscht auch mein Group element und bricht danach ab
+			if(obj instanceof Group){
 				group.getChildren().remove(i);
-				firstCircle = true;
-				delete = true;
-			}else if(obj instanceof Circle && firstCircle == true){
-				group.getChildren().remove(i);
-				delete = false;
 				break;
-			}else if(delete){
-				group.getChildren().remove(i);
 			}
+			
+			group.getChildren().remove(i);
 		}
 		
 	}
